@@ -1,0 +1,4 @@
+GET http://localhost:6000/inventory/sale
+
+###
+GET http://localhost:9000/inventory/sale

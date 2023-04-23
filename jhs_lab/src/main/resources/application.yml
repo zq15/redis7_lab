@@ -1,0 +1,18 @@
+server:
+  port: 5555
+
+spring:
+  # swagger
+  swagger2:
+    enabled: true
+  mvc:
+    pathmatch:
+      #在springboot2.6.X结合swagger2.9.X会提示documentationPluginsBootstrapper空指针异常，
+      #原因是在springboot2.6.X中将SpringMVC默认路径匹配策略从AntPathMatcher更改为PathPatternParser，
+      # 导致出错，解决办法是matching-strategy切换回之前ant_path_matcher
+      matching-strategy: ant_path_matcher
+  redis:
+    database: 4
+    host: 127.0.0.1
+    port: 6379
+#    password: 123456
