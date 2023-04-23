@@ -12,7 +12,8 @@ spring:
       # 导致出错，解决办法是matching-strategy切换回之前ant_path_matcher
       matching-strategy: ant_path_matcher
   redis:
-    database: 4
+    database: 0
+
     host: 127.0.0.1
     port: 6379
 #    password: 123456

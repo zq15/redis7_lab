@@ -60,9 +60,9 @@ public class InventoryService {
         } finally {
             //            stringRedisTemplate.delete(key);
             // 改进点，修改为 Lua 脚本的 redis 分布式锁调用，必须保证原子性，参考官网脚本案例
-            String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then"  +
+            String luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then "  +
                     "return redis.call('del',KEYS[1]) " +
-                    "else" +
+                    "else " +
                     "return 0 " +
                     "end";
             stringRedisTemplate.execute(new DefaultRedisScript(luaScript, Boolean.class), Arrays.asList(key), uuidValue);
