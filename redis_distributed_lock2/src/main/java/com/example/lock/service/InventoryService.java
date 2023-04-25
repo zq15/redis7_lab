@@ -1,18 +1,13 @@
 package com.example.lock.service;
 
-import cn.hutool.core.util.IdUtil;
+import com.example.lock.lock.DistributedLockFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @Slf4j
@@ -24,8 +19,58 @@ public class InventoryService {
     @Value("${server.port}")
     private String port;
 
-    private Lock lock = new ReentrantLock();
+    @Autowired
+    private DistributedLockFactory distributedLockFactory;
 
+//    private Lock lock = new ReentrantLock();
+
+    // v 7.0 lua 脚本
+    public String sale() {
+        String retMessage = "";
+        String key = "zzyRedisLock";
+
+        Lock redisLock = distributedLockFactory.getDistributedLock("redis");
+        redisLock.lock();
+
+        try {
+            //1 查询库存信息
+            String result = stringRedisTemplate.opsForValue().get("inventory001");
+            //2 判断库存是否足够
+            Integer inventoryNumber = result == null ? 0 : Integer.parseInt(result);
+            //3 扣除库存，每次减少一个
+            if (inventoryNumber > 0) {
+                inventoryNumber--;
+                stringRedisTemplate.opsForValue().set("inventory001", String.valueOf(inventoryNumber));
+                retMessage = "成功卖出一个商品，剩余库存" + inventoryNumber;
+                System.out.println(retMessage + "，端口号：" + port);
+                testReEntry();
+            } else {
+                retMessage = "商品卖完了";
+            }
+        } finally {
+            redisLock.unlock();
+        }
+
+        return retMessage + "，端口号：" + port;
+    }
+
+    private void testReEntry() {
+        Lock redisLock = distributedLockFactory.getDistributedLock("redis");
+        redisLock.lock();
+
+        try {
+            System.out.println("========测试可重入锁========");
+        } finally {
+            redisLock.unlock();
+        }
+    }
+
+
+    /**
+     * v6.0
+     * @return
+     */
+    /*
     public String sale() {
         String retMessage = "";
         String key = "zzyRedisLock";
@@ -69,6 +114,8 @@ public class InventoryService {
 
         return retMessage + "，端口号：" + port;
     }
+    *
+     */
 
     // 3.1 递归 重试 容易栈溢出 不推荐，高并发唤醒后 while 判断而不是if
     /*

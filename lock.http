@@ -1,1 +1,1 @@
-GET http://127.0.0.1:9000/inventory/sale
+GET http://127.0.0.1:6000/inventory/sale

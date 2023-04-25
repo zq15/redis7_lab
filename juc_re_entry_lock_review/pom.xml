@@ -3,21 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>redis7_study</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-    <groupId>org.example</groupId>
-    <artifactId>redis7_study</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <modules>
-        <module>native_lab</module>
-        <module>canal_lab</module>
-        <module>springboot_lab</module>
-        <module>guava_bloom_lab</module>
-        <module>jhs_lab</module>
-        <module>redis_distributed_lock2</module>
-        <module>redis_distributed_lock3</module>
-        <module>juc_re_entry_lock_review</module>
-    </modules>
+    <artifactId>juc_re_entry_lock_review</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
