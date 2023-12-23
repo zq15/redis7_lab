@@ -17,6 +17,7 @@
         <module>redis_distributed_lock2</module>
         <module>redis_distributed_lock3</module>
         <module>juc_re_entry_lock_review</module>
+        <module>multiplexing_io_lab</module>
     </modules>
 
     <properties>

@@ -18,7 +18,8 @@ public class InventoryController {
     @ApiOperation("扣除库存，一次卖一个")
     @GetMapping("/inventory/sale")
     public String sale() {
-        return inventoryService.sale();
+//        return inventoryService.sale();
+        return inventoryService.saleByRedisson();
     }
 
 }

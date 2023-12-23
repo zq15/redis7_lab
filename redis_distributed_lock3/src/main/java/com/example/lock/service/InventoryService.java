@@ -2,6 +2,7 @@ package com.example.lock.service;
 
 import com.example.lock.lock.DistributedLockFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -22,7 +23,40 @@ public class InventoryService {
     @Autowired
     private DistributedLockFactory distributedLockFactory;
 
+    @Autowired
+    private Redisson redisson;
+
 //    private Lock lock = new ReentrantLock();
+
+    // v 9.0
+    public String saleByRedisson() {
+        String retMessage = "";
+        String key = "zzyRedisLock";
+
+        Lock redisLock = redisson.getLock(key);
+        redisLock.lock();
+
+        try {
+            //1 查询库存信息
+            String result = stringRedisTemplate.opsForValue().get("inventory001");
+            //2 判断库存是否足够
+            Integer inventoryNumber = result == null ? 0 : Integer.parseInt(result);
+            //3 扣除库存，每次减少一个
+            if (inventoryNumber > 0) {
+                inventoryNumber--;
+                stringRedisTemplate.opsForValue().set("inventory001", String.valueOf(inventoryNumber));
+                retMessage = "成功卖出一个商品，剩余库存" + inventoryNumber;
+                System.out.println(retMessage + "，端口号：" + port);
+                testReEntry();
+            } else {
+                retMessage = "商品卖完了";
+            }
+        } finally {
+            redisLock.unlock();
+        }
+
+        return retMessage + "，端口号：" + port;
+    }
 
     // v 7.0 lua 脚本
     public String sale() {
